@@ -1,0 +1,163 @@
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+
+interface LoginProps {
+  // showSignUp과 setShowSignUp을 props로 받음
+  showSignUp: boolean;
+  setShowSignUp: (value: boolean) => void;
+  setShowLogin: (value: boolean) => void;
+}
+
+function Login({ setShowSignUp, setShowLogin }: LoginProps) {
+  const router = useRouter();
+
+  const handleSignUpClick = () => {
+    setShowSignUp(true);
+    setShowLogin(false);
+  };
+
+  // 이메일과 비밀번호 상태 캐치
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // 이메일, 비밀번호 모두 입력됐는지 여부
+  const [bothFilled, setBothFilled] = useState(false);
+
+  // 이메일 입력란 값 변경될 때 상태 업데이트
+  const emailFilled = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+
+    // 비밀번호까지도 다 입력됐는가
+    setBothFilled(e.target.value !== '' && password !== '');
+  };
+
+  // 비밀번호 입력란 값 변경될 때 상태 업데이트
+  const passwordFilled = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+
+    // 이메일까지도 다 입력됐는가
+    setBothFilled(e.target.value !== '' && email !== '');
+  };
+
+  const loginIsReady = bothFilled;
+
+  // 이메일 입력란에 focus 됐는지 아닌지 체크
+  const [mailIsFocused, setMailIsFocused] = useState(false);
+
+  const handleMailFocus = () => {
+    setMailIsFocused(true);
+  };
+
+  const handleMailBlur = () => {
+    setMailIsFocused(false);
+  };
+
+  // 비밀번호 입력란에 focus 됐는지 아닌지 체크
+  const [pwIsFocused, setPwIsFocused] = useState(false);
+
+  const handlePwFocus = () => {
+    setPwIsFocused(true);
+  };
+
+  const handlePwBlur = () => {
+    setPwIsFocused(false);
+  };
+
+  return (
+    <>
+      <div className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-row shadow-md">
+        <img
+          className="max-w-none border border-solid border-gray-400"
+          src="./originalSnowballEffect.jpg"
+          alt="Snowball Effect Img"
+        />
+        <div className="flex w-96 flex-col border border-solid border-gray-400 bg-slate-50 p-2.5 opacity-80">
+          <h1 className="mx-6 w-full text-center text-4xl font-bold">LOGIN</h1>
+          <form className="mb-4 w-11/12 border-none p-2.5">
+            <div className="mb-6 flex w-full items-center justify-start p-2.5">
+              <label
+                htmlFor="email"
+                className="float-left inline-block w-24 whitespace-pre-wrap break-keep text-right text-lg font-medium"
+              >
+                E-mail
+              </label>
+              <input
+                id="email"
+                key="email"
+                type="email"
+                value={email}
+                onChange={emailFilled}
+                className="my-0 ml-6 mr-2 w-72 border-x-0 border-t-0 bg-transparent p-1 text-sm focus:outline-0"
+                style={{
+                  borderBottomColor: mailIsFocused ? '#ccc' : '#ddd',
+                  borderBottomWidth: mailIsFocused ? '3px' : '2px',
+                }}
+                onFocus={handleMailFocus}
+                onBlur={handleMailBlur}
+              />
+            </div>
+            <div className="mb-6 flex w-full items-center justify-start p-2.5">
+              <label
+                htmlFor="password"
+                className="float-left inline-block w-24 whitespace-pre-wrap break-keep text-right text-lg font-normal"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                key="password"
+                type="password"
+                value={password}
+                onChange={passwordFilled}
+                className="my-0 ml-6 mr-2 w-72 border-x-0 border-t-0 bg-transparent p-1 text-sm focus:outline-0"
+                style={{
+                  borderBottomColor: pwIsFocused ? '#ccc' : '#ddd',
+                  borderBottomWidth: pwIsFocused ? '3px' : '2px',
+                }}
+                onFocus={handlePwFocus}
+                onBlur={handlePwBlur}
+              />
+            </div>
+          </form>
+          <div className="mb-5 ml-6 flex w-11/12 flex-row justify-start text-base">
+            <input id="remember" type="checkbox" className="mr-4" />
+            <label htmlFor="remember">REMEMBER MY E-MAIL</label>
+          </div>
+          <p
+            onClick={() => router.push('/findAccount')}
+            className="mx-auto my-2.5 flex items-center justify-center"
+          >
+            계정을 잊어버렸어요.
+          </p>
+          {loginIsReady ? (
+            <button
+              className="mx-auto my-2.5 flex w-2/3 items-center justify-center rounded-lg border border-solid p-2.5 text-sm text-white"
+              style={{ borderColor: '#ddd', backgroundColor: '#7fa4b2' }}
+              onClick={() => router.push('/')}
+            >
+              LOGIN
+            </button>
+          ) : (
+            <button
+              className="mx-auto my-2.5 flex w-2/3 items-center justify-center rounded-lg border border-solid p-2.5 text-sm text-white"
+              style={{ borderColor: '#ddd', backgroundColor: '#aaa' }}
+            >
+              LOGIN
+            </button>
+          )}
+          <div className="mb-0.5 mt-3.5 text-center text-sm">
+            DON&apos;T HAVE AN ACCOUNT?
+          </div>
+          <p
+            onClick={handleSignUpClick}
+            className="text-center text-lg font-semibold no-underline"
+          >
+            SIGN UP
+          </p>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Login;

@@ -1,0 +1,31 @@
+/* @tailwind base: Tailwind CSS의 기본 스타일을 설정하는 지시어 */
+/* 이 지시어를 사용하면 기본적인 HTML 요소의 스타일을 초기화할 수 있음. */
+@tailwind base;
+
+/* tailwind로 설정된 스타일이 있더라도 이 아래에 쓰는 스타일로 덮어씌워진다는 뜻임 */
+
+body {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+/* @tailwind components: Tailwind CSS에서 제공하는 컴포넌트 스타일을 설정하는 지시어 */
+/* 이 지시어를 사용하면 button, input 같은 컴포넌트 스타일을 쉽게 적용할 수 있음. */
+@tailwind components;
+
+/* @tailwind utilities: Tailwind CSS에서 제공하는 유틸리티 클래스를 설정하는 지시어 */
+/* 이 지시어를 사용하면 여러 가지 유틸리티 클래스를 쉽게 적용할 수 있음. */
+@tailwind utilities;
+
+
+/* CSS Linter에서 @tailwind 지시어를 무시하도록 설정하면, Unknown at rule @tailwind라는 경고가 뜨지 않는다. */
