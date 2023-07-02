@@ -12,12 +12,12 @@
 storybook-static
 
 # cypress
-+cypress
+cypress/
 cypress/screenshots
 cypress/videos
 
 # husky
-+.husky
+husky/
 
 # next.js
 /.next
