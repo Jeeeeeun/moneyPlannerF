@@ -12,8 +12,12 @@
 storybook-static
 
 # cypress
++cypress
 cypress/screenshots
 cypress/videos
+
+# husky
++.husky
 
 # next.js
 /.next
@@ -28,6 +32,7 @@ public/sitemap-*.xml
 .swc/
 
 # production
++dist
 /build
 
 # misc
