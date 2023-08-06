@@ -131,7 +131,7 @@ const schema = yup.object({
 				password: passwordRef.current?.value,
 			};
 			axios
-			.post("http://localhost:3000/", data) // "너한테 요청 보낼거야!"라는 주소를 써야 함
+			.post("http://localhost:3000/signUp", data) // "너한테 요청 보낼거야!"라는 주소를 써야 함
 			.then((response) => {
 				console.log(response);
 				setShowSignUpSuccess(true);

@@ -4,32 +4,38 @@ import '../styles/global.css';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import type { AppProps } from 'next/app';
+
 import { Gamja_Flower } from 'next/font/google'; // google font 사용하기 위함
 
+import { Provider } from 'react-redux';
+import store from '../store/store';
+
 const gamjaFlower = Gamja_Flower({
-	weight: '400',
-	style: 'normal',
-	subsets: ['latin'],
+  weight: '400',
+  style: 'normal',
+  subsets: ['latin'],
 });
 
 const cache = createCache({
-	key: 'css',
-	prepend: true,
+  key: 'css',
+  prepend: true,
 });
 
 const MyApp = ({ Component, pageProps }: AppProps) => (
-	<>
-		<style jsx global>
-			{`
+  <>
+    <style jsx global>
+      {`
         html {
           font-family: ${gamjaFlower.style.fontFamily};
         }
       `}
-		</style>
-		<CacheProvider value={cache}>
-			<Component {...pageProps} />
-		</CacheProvider>
-	</>
+    </style>
+    <CacheProvider value={cache}>
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
+    </CacheProvider>
+  </>
 );
 
 export default MyApp;

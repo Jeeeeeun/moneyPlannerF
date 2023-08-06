@@ -1,12 +1,18 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/slices/authSlice'
 
 interface LoginProps {
 	// showSignUp과 setShowSignUp을 props로 받음
 	showSignUp: boolean;
 	setShowSignUp: (value: boolean) => void;
 	setShowLogin: (value: boolean) => void;
+}
+
+function isAxiosError(error: unknown): error is AxiosError {
+  return (error as AxiosError).isAxiosError === true;
 }
 
 function Login({ setShowSignUp, setShowLogin }: LoginProps) {
@@ -17,6 +23,8 @@ function Login({ setShowSignUp, setShowLogin }: LoginProps) {
 		setShowLogin(false);
 	};
 
+	const dispatch = useDispatch();
+
 	// 로그인 데이터 백엔드로 넘겨보자!
 	const handleLogin = async () => {
 		try {
@@ -24,15 +32,32 @@ function Login({ setShowSignUp, setShowLogin }: LoginProps) {
 				email: emailRef.current?.value,
 				password: passwordRef.current?.value
 			});
-			const token = response.data.token;
+		
+			if(response.status === 200) {
+				const token = response.data.token;
+		
+				// action dispatch
+				dispatch(login(token));
+		
+				// 로그인 화면 종료
+				setShowLogin(false);
+		
+				// 홈 화면으로 redirect
+				router.push('/');
 
-			// 토큰을 로컬 스토리지에 저장
-			localStorage.setItem('token', token);
-
-		} catch (error) {
-			console.error('로그인에 실패했습니다.', error)
+			} else {
+				console.error('알 수 없는 오류가 발생했습니다.');
+			}
+		
+		} catch (error: unknown) {
+			if (isAxiosError(error) && error.response?.status === 401) {
+				alert('이메일 또는 비밀번호가 일치하지 않습니다.');
+			} else {
+				console.error('로그인에 실패했습니다.', error);
+			}
 		}
 	}
+  
 	const emailRef = useRef<HTMLInputElement>(null);
 	const passwordRef = useRef<HTMLInputElement>(null);
 	
