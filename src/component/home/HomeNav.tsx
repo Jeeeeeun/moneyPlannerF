@@ -17,7 +17,7 @@ function HomeNav(props: HomeNavProps) {
 	const dispatch = useDispatch();
 	const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 	
-	// 테스트용
+	// 로그인 여부 console창에 찍어봄
 	useEffect(() => {
 		console.log("isLoggedin: ", isLoggedIn);
 	}, [isLoggedIn]);
@@ -34,6 +34,7 @@ function HomeNav(props: HomeNavProps) {
 
 	const handleLogoutClick = () => {
 		// 토큰 삭제
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 		dispatch(logout());
 	}
 

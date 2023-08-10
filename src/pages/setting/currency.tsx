@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 // import type { DragDropContextProps, DroppableProps, DraggableProps } from "react-beautiful-dnd"
+import { useRouter } from "next/router";
 import SlideMenu from "@/component/slideMenu/SlideMenu";
+import { isLoggedIn } from "@/utils/auth";
 
 interface Currency {
 	country_name: string;
@@ -11,15 +13,22 @@ interface Currency {
 
 function Currency() {
 	const [currencyList, setCurrencyList] = useState<Currency[]>([])
+	const router = useRouter(); // useRouter hook
 
 	useEffect(() => {
-		const getCurrency = async (): Promise<void> => {
-			const response = await axios.get(
-				"http://localhost:3000/getCurrencyList"
-			);
-			setCurrencyList(response.data);
-		};
-		getCurrency();
+		if (!isLoggedIn()) {
+			// 로그인되지 않은 사용자를 홈화면으로 redirection
+			// redirected란 parameter 추가
+			router.push('/?redirected=true');
+		} else {
+      const getCurrency = async (): Promise<void> => {
+        const response = await axios.get(
+          "http://localhost:3000/getCurrencyList"
+        );
+        setCurrencyList(response.data);
+      };
+      getCurrency();
+    }
 	}, []);
 
 	return (
