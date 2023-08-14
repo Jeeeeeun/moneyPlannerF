@@ -2,8 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 // import type { DragDropContextProps, DroppableProps, DraggableProps } from "react-beautiful-dnd"
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import SlideMenu from "@/component/slideMenu/SlideMenu";
-import { isLoggedIn } from "@/utils/auth";
+import { isLoggedIn, getAuthToken } from "@/utils/auth";
+import { useDispatch } from "react-redux";
+import { showLogin } from "@/store/slices/loginUiSlice";
 
 interface Currency {
 	country_name: string;
@@ -15,21 +18,45 @@ function Currency() {
 	const [currencyList, setCurrencyList] = useState<Currency[]>([])
 	const router = useRouter(); // useRouter hook
 
+	const dispatch = useDispatch();
+
+	const isUserLoggedIn = isLoggedIn();
+
 	useEffect(() => {
-		if (!isLoggedIn()) {
-			// 로그인되지 않은 사용자를 홈화면으로 redirection
-			// redirected란 parameter 추가
-			router.push('/?redirected=true');
-		} else {
-      const getCurrency = async (): Promise<void> => {
-        const response = await axios.get(
-          "http://localhost:3000/getCurrencyList"
-        );
-        setCurrencyList(response.data);
-      };
-      getCurrency();
-    }
-	}, []);
+		const init = async () => {
+			if(router.isReady && !isUserLoggedIn) {
+				const toastMsg = toast.error('로그인이 필요한 서비스입니다.', {
+					position: toast.POSITION.TOP_CENTER,
+				});
+
+				dispatch(showLogin(true));
+
+				// router.replace(url, as, options)
+				// url: 지정된 url로 이동
+				// as: 표시될 url 지정. undefined를 쓰면, 앞서 작성된 url 인자와 동일함을 의미
+				// options: 추가 옵션을 지정하는 객체.
+				// shallow: true => 페이지를 전환하지만, state 변경을 trigger하지는 않음.
+				// 즉, react component 상태가 유지되면서 페이지 데이터는 다시 불러오지 않음. 페이지 전환에 대한 성능이 향상됨.
+				router.replace('/', '/', { shallow: true });
+
+				setTimeout(() => {
+					toast.dismiss(toastMsg);
+				}, 3000);
+			} else {
+				const token = getAuthToken();
+
+				if (token) {
+					const response = await axios.get("http://localhost:3000/api/getCurrencyList", {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						}
+					});
+					setCurrencyList(response.data);
+				}
+			}
+		}
+		init();
+	}, [router.isReady, isUserLoggedIn]);
 
 	return (
 		<>

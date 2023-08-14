@@ -25,17 +25,6 @@ function Login({ setShowSignUp, setShowLogin }: LoginProps) {
 
 	const dispatch = useDispatch();
 
-	// 쿠키에 저장된 token 가져오기
-	function getCookie(cookieName: string): string | undefined {
-		const cookieValue = document.cookie
-		.split(';')
-		.map((cookie) => cookie.trim()) // 공백 제거
-		.find((row) => row.startsWith(`${cookieName}=`))
-		?.split('=')[1];
-
-		return cookieValue;
-	}
-
 	// 로그인 데이터 백엔드로 넘겨보자!
 	const handleLogin = async () => {
 		try {
@@ -48,12 +37,7 @@ function Login({ setShowSignUp, setShowLogin }: LoginProps) {
 		
 			if(response.status === 200) {
 
-				// console.log('서버에서 받은 header(set-cookie): ', response.headers['set-cookie']);
-				// 웹 보안 & 개인정보 보호 문제 때문에 클라이언트 측에서 undefined 뜨는 게 정상임
-
-				const token = getCookie('token');
-		
-				// console.log("토큰: ", token);
+				const token = response.data.token;
 
 				if(token) {
 					// action dispatch
@@ -64,8 +48,6 @@ function Login({ setShowSignUp, setShowLogin }: LoginProps) {
 		
 				// 로그인 화면 종료
 				setShowLogin(false);
-
-        		//console.log("쿠키: ", document.cookie);
 		
 				// 홈 화면으로 redirect
 				router.push('/');

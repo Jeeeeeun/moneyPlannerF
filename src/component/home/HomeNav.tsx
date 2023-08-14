@@ -1,9 +1,9 @@
 import { OpenMenu } from '@/component/FontAwesome/FontAwesomeIcons';
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { logout } from '@/store/slices/authSlice';
 import router from 'next/router';
+import axios from 'axios';
 
 type HomeNavProps = {
 	// props 타입 정의
@@ -16,26 +16,32 @@ function HomeNav(props: HomeNavProps) {
 
 	const dispatch = useDispatch();
 	const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-	
-	// 로그인 여부 console창에 찍어봄
-	useEffect(() => {
-		console.log("isLoggedin: ", isLoggedIn);
-	}, [isLoggedIn]);
-	
-  const handleHomeLogoClick = () => {
-    router.push('/');
-  }
+
+	const handleHomeLogoClick = () => {
+		router.push('/');
+	}
 
 	const handleLoginClick = () => {
-		if(!isLoggedIn) {
+		if (!isLoggedIn) {
 			props.onLoginClick();
 		}
 	};
 
-	const handleLogoutClick = () => {
-		// 토큰 삭제
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-		dispatch(logout());
+	const handleLogoutClick = async () => {
+		try {
+			const response = await axios.post('http://localhost:3000/logout', {
+				withCredentials: true
+			})
+
+			if (response.status === 200) {
+				// action dispatch
+				dispatch(logout());
+			} else {
+				console.error('알 수 없는 오류가 발생했습니다.');
+			}
+		} catch (error) {
+			console.error('로그아웃에 실패했습니다.', error);
+		}
 	}
 
 	return (
@@ -65,7 +71,7 @@ function HomeNav(props: HomeNavProps) {
 				>
 					LOGIN
 				</a>)}
-				
+
 				<a
 					onClick={props.onSignUpClick}
 					className="p-5 text-2xl font-black"

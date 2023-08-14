@@ -1,3 +1,5 @@
+// _document.tsx: 정적 HTML 페이지를 생성하는 데 사용하는 서버사이드 렌더링(SSR) 구성 요소
+
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 import { AppConfig } from '@/utils/AppConfig';
@@ -8,7 +10,9 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang={AppConfig.locale}>
-        <Head />
+        <Head>
+          <link rel="shortcut icon" href="/favicon.ico" />
+        </Head>
         <body>
           <Main />
           <NextScript />

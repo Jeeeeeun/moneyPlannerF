@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/store';
 import { useRouter } from 'next/router';
+import { showLogin } from '@/store/slices/loginUiSlice';
 
 import HomeNav from '@/component/home/HomeNav';
 import IntroComment from '@/component/home/IntroComment';
@@ -10,15 +13,19 @@ import SlideMenu from '@/component/slideMenu/SlideMenu';
 
 function Index() {
 	const [showSignUp, setShowSignUp] = useState(false);
-	const [showLogin, setShowLogin] = useState(false);
 	const [showSlideMenu, setShowSlideMenu] = useState(false);
+
+	const dispatch = useDispatch();
+	const showLoginComponent = useSelector((state: RootState) => (
+		state.loginUi.showLoginComponent
+	));
 
 	const handleSignUpClick = () => {
 		setShowSignUp(true);
 	};
 
 	const handleLoginClick = () => {
-		setShowLogin(true);
+		dispatch(showLogin(true));
 	};
 
 	const handleMenuClick = () => {
@@ -29,14 +36,20 @@ function Index() {
 
 	useEffect(() => {
 
-		// URL의 query string에서 "redirected"라는 parameter를 읽어옴
-		const redirected = router.query.redirected;
+		const handlePopState = (e: PopStateEvent) => {
+			if(e.state && e.state.redirected) {
+				dispatch(showLogin(true));
+			}
+		};
 
-		if (redirected) {
-			// redirect된 경우에만 login component를 띄움
-			setShowLogin(true);
+		window.addEventListener('popstate', handlePopState);
+
+
+		return () => {
+			window.removeEventListener('popstate', handlePopState);
 		}
-	}, [router.query]);
+
+	}, [router]);
 
 	return (
 		<>
@@ -53,8 +66,8 @@ function Index() {
 				<SnowEffectDesc />
 				{showSignUp && (
 					<SignUp
-						showLogin={showLogin}
-						setShowLogin={setShowLogin}
+						showLogin={showLoginComponent}
+						setShowLogin={(show) => dispatch(showLogin(show))}
 						setShowSignUp={setShowSignUp}
 					/>
 				)}
@@ -64,14 +77,14 @@ function Index() {
 						style={{ backdropFilter: 'blur(5px)' }}
 					></div>
 				)}
-				{showLogin && (
+				{showLoginComponent && (
 					<Login
 						showSignUp={showSignUp}
 						setShowSignUp={setShowSignUp}
-						setShowLogin={setShowLogin}
+						setShowLogin={(show) => dispatch(showLogin(show))}
 					/>
 				)}
-				{showLogin && (
+				{showLoginComponent && (
 					<div
 						className="fixed left-0 top-0 h-full w-full"
 						style={{ backdropFilter: 'blur(5px)' }}
